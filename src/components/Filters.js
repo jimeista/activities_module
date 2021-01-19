@@ -1,17 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import axios from 'axios'
-import { Space, Button } from 'antd'
+import { Button } from 'antd'
+import oboe from 'oboe'
 
 import DropdownCheckboxWrapper from '../common/Filters/DropdownCheckboxWrapper'
 
 const Filters = () => {
-  const [data, setData] = useState([])
   const [list, setList] = useState({})
+  const [data, setData] = useState([])
 
   useEffect(() => {
-    axios
-      .get('https://jsonplaceholder.typicode.com/todos')
-      .then((r) => setData(r.data))
+    let url = '/sc-children-activities/api/activities'
+
+    oboe(url).node('owner-organisation', (name) => {
+      setData((state) => (state.includes(name) ? state : [...state, name]))
+    })
   }, [])
 
   const districts_ = useMemo(() => {
@@ -21,6 +23,7 @@ const Filters = () => {
           title={'Районы'}
           checkbox={districts}
           setList={setList}
+          height={270}
         />
       </div>
     )
@@ -31,8 +34,8 @@ const Filters = () => {
       <div className='ChildSection_filter_item'>
         <DropdownCheckboxWrapper
           title={'Организация'}
-          checkbox={data.map((i) => ({
-            name: i.title,
+          checkbox={data.map((name) => ({
+            name,
             disabled: false,
           }))}
           setList={setList}
@@ -49,7 +52,7 @@ const Filters = () => {
           title={'Тип оплаты'}
           checkbox={payment}
           setList={setList}
-          height={150}
+          height={120}
         />
       </div>
     )
@@ -62,7 +65,7 @@ const Filters = () => {
           title={'Финансирование'}
           checkbox={payment}
           setList={setList}
-          height={150}
+          height={90}
         />
       </div>
     )
